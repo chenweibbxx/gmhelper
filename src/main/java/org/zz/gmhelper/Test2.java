@@ -60,12 +60,10 @@ public class Test2 {
         byte[] keyBytes = parseDERFromPEM(Test2.readFile("target/ServerPkcs8.pem"), "-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----");
         BCECPrivateKey privateKey = Test2.generatePrivateKeyFromDER(keyBytes);
         System.out.println(privateKey.getAlgorithm());
-
-        byte[] sign = SM2Util.sign(privateKey,Test2.SRC_DATA_32B);
-        Boolean flage = SM2Util.verify(pubKey,Test2.SRC_DATA_32B,sign);
-        System.out.println(flage);
-
         String content ="hello world";
+        byte[] sign = SM2Util.sign(privateKey,content.getBytes());
+        Boolean flag = SM2Util.verify(pubKey,content.getBytes(),sign);
+        System.out.println(flag);
         byte[] result = SM2Util.decrypt(privateKey,SM2Util.encrypt(pubKey,content.getBytes()));
         System.out.println(new String(result));
 
