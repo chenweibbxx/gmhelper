@@ -22,7 +22,7 @@ public class Test {
     }
 
     private static final char[] TEST_P12_PASSWD = "123456".toCharArray();
-    private static final String TEST_P12_FILENAME = "target/ServerCA.p12";
+    private static final String TEST_P12_FILENAME = "E:\\IdeaProjects\\gmhelper\\src\\main\\resources\\ServerCA.p12";
 
     public static void main(String[] args) {
         try {

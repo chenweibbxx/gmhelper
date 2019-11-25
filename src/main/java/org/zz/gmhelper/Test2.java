@@ -8,7 +8,10 @@ import org.zz.gmhelper.cert.SM2CertUtil;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -54,18 +57,30 @@ public class Test2 {
         return (BCECPrivateKey) kf.generatePrivate(peks);
     }
 
+
+    private static final String TEST_CA_FILENAME = "E:\\IdeaProjects\\gmhelper\\src\\main\\resources\\ServerCA.crt";
+    private static final String TEST_PRI_KEY_FILENAME = "E:\\IdeaProjects\\gmhelper\\src\\main\\resources\\ServerPkcs8.pem";
+
     public static void main(String[] args) throws CertificateException, NoSuchProviderException, IOException, InvalidKeySpecException, NoSuchAlgorithmException, CryptoException {
-        X509Certificate cert = SM2CertUtil.getX509Certificate("target/ServerCA.crt");
+        //获取证书的公钥
+        X509Certificate cert = SM2CertUtil.getX509Certificate(Files.newInputStream(Paths.get(TEST_CA_FILENAME)));
         BCECPublicKey pubKey = SM2CertUtil.getBCECPublicKey(cert);
-        byte[] keyBytes = parseDERFromPEM(Test2.readFile("target/ServerPkcs8.pem"), "-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----");
+        //获取私钥
+        byte[] keyBytes = parseDERFromPEM(Test2.readFile(TEST_PRI_KEY_FILENAME), "-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----");
         BCECPrivateKey privateKey = Test2.generatePrivateKeyFromDER(keyBytes);
+        //确定的EC算法
         System.out.println(privateKey.getAlgorithm());
         String content ="hello world";
+        //签名
         byte[] sign = SM2Util.sign(privateKey,content.getBytes());
+        //验证签名
         Boolean flag = SM2Util.verify(pubKey,content.getBytes(),sign);
         System.out.println(flag);
+        //加密
         byte[] encyContent = SM2Util.encrypt(pubKey,content.getBytes());
+        //解密
         byte[] result = SM2Util.decrypt(privateKey,encyContent);
+        //打印
         System.out.println(new String(result));
 
     }
