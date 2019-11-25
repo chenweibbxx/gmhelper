@@ -1,6 +1,7 @@
 package org.zz.gmhelper;
 
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.zz.gmhelper.cert.SM2X509CertMaker;
 
@@ -31,9 +32,9 @@ public class Test {
                 ks.load(is, TEST_P12_PASSWD);
             }
 
-            PrivateKey privateKey = (BCECPrivateKey) ks.getKey("server", TEST_P12_PASSWD);
+            BCECPrivateKey privateKey = (BCECPrivateKey) ks.getKey("server", TEST_P12_PASSWD);
             X509Certificate cert = (X509Certificate) ks.getCertificate("server");
-
+            BCECPublicKey publicKey = (BCECPublicKey) cert.getPublicKey();
             byte[] srcData = "1234567890123456789012345678901234567890".getBytes();
 
             // create signature
@@ -48,6 +49,12 @@ public class Test {
             verify.update(srcData);
             boolean sigValid = verify.verify(signatureValue);
             System.out.println(sigValid);
+
+            String content = "hello world";
+            byte[] a = SM2Util.encrypt(publicKey,content.getBytes());
+            byte[] b = SM2Util.decrypt(privateKey,a);
+            String result = new String(b);
+            System.out.println(result);
         } catch (Exception ex) {
             ex.printStackTrace();
 
