@@ -64,7 +64,8 @@ public class Test2 {
         byte[] sign = SM2Util.sign(privateKey,content.getBytes());
         Boolean flag = SM2Util.verify(pubKey,content.getBytes(),sign);
         System.out.println(flag);
-        byte[] result = SM2Util.decrypt(privateKey,SM2Util.encrypt(pubKey,content.getBytes()));
+        byte[] encyContent = SM2Util.encrypt(pubKey,content.getBytes());
+        byte[] result = SM2Util.decrypt(privateKey,encyContent);
         System.out.println(new String(result));
 
     }
